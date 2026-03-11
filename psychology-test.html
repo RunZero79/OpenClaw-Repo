@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>心理测试 - 发现真实的你</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #eee;
+            border-radius: 3px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+        
+        .question {
+            display: none;
+        }
+        
+        .question.active {
+            display: block;
+            animation: slideIn 0.4s ease;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .question h2 {
+            color: #444;
+            margin-bottom: 25px;
+            font-size: 20px;
+            line-height: 1.5;
+        }
+        
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .option {
+            padding: 15px 20px;
+            border: 2px solid #eee;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            color: #555;
+        }
+        
+        .option:hover {
+            border-color: #667eea;
+            background: #f8f7ff;
+            transform: translateX(5px);
+        }
+        
+        .option.selected {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+        }
+        
+        .result {
+            display: none;
+            text-align: center;
+        }
+        
+        .result.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .result-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+        
+        .result-title {
+            font-size: 24px;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        
+        . color: #666result-desc {
+           ;
+            line-height: 1.8;
+            margin-bottom: 30px;
+        }
+        
+        .btn {
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        
+        .btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .start-screen {
+            text-align: center;
+        }
+        
+        .start-screen p {
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.8;
+        }
+        
+        .tips {
+            background: #f8f7ff;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+        
+        .tips h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .tips li {
+            color: #555;
+            margin-bottom: 8px;
+            margin-left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧠 心理测试</h1>
+        <p class="subtitle">发现你内心的隐藏性格</p>
+        
+        <div class="progress-bar">
+            <div class="progress" id="progress"></div>
+        </div>
+        
+        <!-- 开始界面 -->
+        <div class="start-screen" id="startScreen">
+            <div class="tips">
+                <h3>📝 测试说明</h3>
+                <ul>
+                    <li>本测试共 5 道题</li>
+                    <li>根据第一反应选择最符合的选项</li>
+                    <li>答案没有对错之分</li>
+                    <li>测试结果仅供参考</li>
+                </ul>
+            </div>
+            <button class="btn" onclick="startTest()">开始测试</button>
+        </div>
+        
+        <!-- 问题界面 -->
+        <div id="questionScreen" style="display: none;">
+            <div class="question active" data-question="0">
+                <h2>1. 当你进入一个陌生聚会，你会怎么做？</h2>
+                <div class="options">
+                    <div class="option" onclick="selectOption(0, 'A')">A. 主动找陌生人聊天</div>
+                    <div class="option" onclick="selectOption(0, 'B')">B. 等待别人来搭话</div>
+                    <div class="option" onclick="selectOption(0, 'C')">C. 默默观察全场</div>
+                    <div class="option" onclick="selectOption(0, 'D')">D. 找认识的人一起</div>
+                </div>
+            </div>
+            
+            <div class="question" data-question="1">
+                <h2>2. 你更倾向于哪种解决问题的方式？</h2>
+                <div class="options">
+                    <div class="option" onclick="selectOption(1, 'A')">A. 冷静分析逻辑解决</div>
+                    <div class="option" onclick="selectOption(1, 'B')">B. 凭直觉和感觉</div>
+                    <div class="option" onclick="selectOption(1, 'C')">C. 寻求他人帮助</div>
+                    <div class="option" onclick="selectOption(1, 'D')">D. 先放一放再说</div>
+                </div>
+            </div>
+            
+            <div class="question" data-question="2">
+                <h2>3. 朋友向你倾诉烦恼，你会？</h2>
+                <div class="options">
+                    <div class="option" onclick="selectOption(2, 'A')">A. 给出具体的建议</div>
+                    <div class="option" onclick="selectOption(2, 'B')">B. 耐心倾听并共情</div>
+                    <div class="option" onclick="selectOption(2, 'C')">C. 讲个笑话转移话题</div>
+                    <div class="option" onclick="selectOption(2, 'D')">D. 分享类似经历</div>
+                </div>
+            </div>
+            
+            <div class="question" data-question="3">
+                <h2>4. 你理想中的周末是怎样的？</h2>
+                <div class="options">
+                    <div class="option" onclick="selectOption(3, 'A')">A. 充实学习/工作</div>
+                    <div class="option" onclick="selectOption(3, 'B')">B. 和朋友聚会出游</div>
+                    <div class="option" onclick="selectOption(3, 'C')">C. 在家安静休息</div>
+                    <div class="option" onclick="selectOption(3, 'D')">D. 尝试新鲜事物</div>
+                </div>
+            </div>
+            
+            <div class="question" data-question="4">
+                <h2>5. 面对困难时，你通常会？</h2>
+                <div class="options">
+                    <div class="option" onclick="selectOption(4, 'A')">A. 迎难而上</div>
+                    <div class="option" onclick="selectOption(4, 'B')">B. 寻求帮助</div>
+                    <div class="option" onclick="selectOption(4, 'C')">C. 暂时逃避</div>
+                    <div class="option" onclick="selectOption(4, 'D')">D. 换个思路</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 结果界面 -->
+        <div class="result" id="resultScreen">
+            <div class="result-icon" id="resultIcon">🎯</div>
+            <h2 class="result-title" id="resultTitle">你是"领导者型"</h2>
+            <p class="result-desc" id="resultDesc">
+                你是一个天生的领导者，具备强大的决策能力和组织能力。
+                你善于分析问题，能够在压力下保持冷静。
+                你喜欢掌控局面，但也需要注意听取他人意见。
+            </p>
+            <button class="btn" onclick="restartTest()">重新测试</button>
+        </div>
+    </div>
+    
+    <script>
+        let currentQuestion = 0;
+        const answers = {};
+        const totalQuestions = 5;
+        
+        const results = {
+            'A': {
+                icon: '🎯',
+                title: '你是"领导者型"',
+                desc: '你是一个天生的领导者，具备强大的决策能力和组织能力。你善于分析问题，能够在压力下保持冷静。你喜欢掌控局面，但也需要注意听取他人意见。'
+            },
+            'B': {
+                icon: '🌟',
+                title: '你是"社交达人型"',
+                desc: '你热情开朗，喜欢与人交往。你善于表达情感，能够带动周围人的情绪。你喜欢成为焦点，人缘很好，但有时可能过于依赖他人认可。'
+            },
+            'C': {
+                icon: '🌙',
+                title: '你是"思考者型"',
+                desc: '你内敛深沉，喜欢独立思考。你善于倾听和分析，不轻易表露情绪。你享受独处时光，思维缜密，但有时可能过度思考。'
+            },
+            'D': {
+                icon: '🚀',
+                title: '你是"探索者型"',
+                desc: '你好奇心强，喜欢尝试新事物。你思维开放，不拘泥于传统。你喜欢自由和变化，适应能力强，但有时可能缺乏恒心。'
+            }
+        };
+        
+        function startTest() {
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('questionScreen').style.display = 'block';
+            updateProgress();
+        }
+        
+        function selectOption(questionIndex, option) {
+            answers[questionIndex] = option;
+            
+            // 选中效果
+            const options = document.querySelectorAll(`[data-question="${ .option`);
+            options.forEach(optquestionIndex}"] => opt.classList.remove('selected'));
+            event.target.classList.add('selected');
+            
+            // 延迟进入下一题
+            setTimeout(() => {
+                if (questionIndex < totalQuestions - 1) {
+                    document.querySelector(`[data-question="${questionIndex}"]`).classList.remove('active');
+                    document.querySelector(`[data-question="${questionIndex + 1}"]`).classList.add('active');
+                    currentQuestion = questionIndex + 1;
+                    updateProgress();
+                } else {
+                    showResult();
+                }
+            }, 300);
+        }
+        
+        function updateProgress() {
+            const progress = ((currentQuestion) / totalQuestions) * 100;
+            document.getElementById('progress').style.width = progress + '%';
+        }
+        
+        function showResult() {
+            document.getElementById('questionScreen').style.display = 'none';
+            document.getElementById('resultScreen').classList.add('active');
+            document.getElementById('progress').style.width = '100%';
+            
+            // 统计结果
+            const counts = { 'A': 0, 'B': 0, 'C': 0, 'D': 0 };
+            Object.values(answers).forEach(ans => counts[ans]++);
+            
+            // 找到最多的选项
+            let maxCount = 0;
+            let resultType = 'A';
+            for (const [type, count] of Object.entries(counts)) {
+                if (count > maxCount) {
+                    maxCount = count;
+                    resultType = type;
+                }
+            }
+            
+            // 显示结果
+            const result = results[resultType];
+            document.getElementById('resultIcon').textContent = result.icon;
+            document.getElementById('resultTitle').textContent = result.title;
+            document.getElementById('resultDesc').textContent = result.desc;
+        }
+        
+        function restartTest() {
+            currentQuestion = 0;
+            for (let key in answers) delete answers[key];
+            
+            document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+            document.querySelectorAll('.question').forEach((q, i) => {
+                q.classList.toggle('active', i === 0);
+            });
+            
+            document.getElementById('resultScreen').classList.remove('active');
+            document.getElementById('questionScreen').style.display = 'block';
+            document.getElementById('startScreen').style.display = 'block';
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('questionScreen').style.display = 'block';
+            
+            updateProgress();
+        }
+    </script>
+</body>
+</html>
